@@ -62,16 +62,16 @@ export default function TextEditor(p: Props) {
 
       {/* Floating toolbar above the box */}
       <div
-        className="absolute z-40 bg-white rounded-lg shadow-xl border border-slate-200 p-1.5 flex items-center gap-1 flex-wrap"
+        className="absolute z-40 bg-white rounded-lg shadow-xl border border-slate-200 p-1 flex items-center gap-1 flex-nowrap overflow-x-auto max-w-[calc(100vw-24px)]"
         style={{
-          left: Math.max(8, p.cssLeft),
-          top: Math.max(8, p.cssTop - 52),
+          left: window.innerWidth < 640 ? 4 : Math.max(8, p.cssLeft),
+          top: p.cssTop < 65 ? p.cssTop + p.cssHeight + 10 : p.cssTop - 52,
         }}
       >
         <select
           value={edit.fontFamily}
           onChange={(e) => p.onChange({ fontFamily: e.target.value as FontFamily })}
-          className="text-xs rounded border border-slate-300 px-1.5 py-1 bg-white text-slate-700 outline-none focus:border-indigo-400"
+          className="text-xs max-xs-[78px] sm:max-w-none truncate rounded border border-slate-300 px-1.5 py-1 bg-white text-slate-700 outline-none focus:border-indigo-400"
           title="Font family"
         >
           {FONTS.map((f) => <option key={f} value={f}>{f}</option>)}

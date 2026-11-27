@@ -28,9 +28,12 @@ interface Props {
   onDownload: () => void;
   onToggleSidebar: () => void;
   onModeChange: (m: EditorMode) => void;
-  onOpenSignature: () => void;
+ onOpenSignature: () => void;
   downloading: boolean;
+  onGoHome: () => void;
 }
+
+
 
 function ToolButton({
   onClick, children, title, disabled, primary,
@@ -75,12 +78,23 @@ function ModeButton({
 export default function Toolbar(p: Props) {
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2 px-3 py-2 bg-white border-b border-slate-200 shadow-sm flex-wrap">
-      <div className="flex items-center gap-2 mr-2">
+      {/* <div className="flex items-center gap-2 mr-2">
         <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
           <FileText size={18} />
         </div>
         <span className="font-semibold text-slate-800 hidden sm:inline">PDF Text Studio</span>
-      </div>
+      </div> */}
+      <button
+        type="button"
+        onClick={p.onGoHome}
+        title="Go to Home"
+        className="flex items-center gap-2 mr-2 cursor-pointer hover:opacity-80 transition-opacity"
+      >
+        <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+          <FileText size={18} />
+        </div>
+        <span className="font-semibold text-slate-800 hidden sm:inline">PDF Text Studio</span>
+      </button>
 
       <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 

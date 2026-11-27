@@ -54,7 +54,7 @@ export default function App() {
 
   const [mode, setMode] = useState<EditorMode>('edit');
   const [showSignature, setShowSignature] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+ const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
   const [downloading, setDownloading] = useState(false);
   const [pageInfo, setPageInfo] = useState<{ width: number; height: number } | null>(null);
   const [overlayBoxes, setOverlayBoxes] = useState<OverlayBox[]>([]);
@@ -91,6 +91,23 @@ export default function App() {
     }
   }, []);
 
+  const handleGoHome = () => {
+    setDoc(null);
+    setPageIndex(0);
+    setEdits([]);
+    setUndoStack([]);
+    setRedoStack([]);
+    setActiveEditId(null);
+    setDraft(null);
+    setSelectedId(null);
+    setOverlayBoxes([]);
+    setPageInfo(null);
+    setShowSignature(false);
+    setLoadError(null);
+    setMode('edit');
+    setLoading(false)
+  };
+
   // ---------- Render page ----------
   useEffect(() => {
     if (!doc) return;
@@ -103,7 +120,7 @@ export default function App() {
 
       let useScale = scale;
       if (fitWidth && scrollRef.current) {
-        const avail = scrollRef.current.clientWidth - 48;
+       const avail = scrollRef.current.clientWidth - (window.innerWidth < 640 ? 16 : 48);
         const viewport0 = page.getViewport({ scale: 1 });
         useScale = Math.max(0.3, Math.min(4, avail / viewport0.width));
         setScale(useScale);
@@ -146,7 +163,7 @@ export default function App() {
       cancelled = true;
       try { renderTaskRef.current?.cancel(); } catch { /* noop */ }
     };
-  }, [doc, pageIndex, scale, fitWidth]);
+  }, [doc, pageIndex, scale, fitWidth,sidebarOpen]);
 
   // ---------- History helpers ----------
   const pushHistory = useCallback((next: Edit[]) => {
@@ -367,6 +384,7 @@ export default function App() {
       ) : (
         <>
           <Toolbar
+          onGoHome={handleGoHome}
             fileName={doc.fileName}
             pageIndex={pageIndex}
             pageCount={doc.pageCount}
@@ -408,7 +426,7 @@ export default function App() {
             {/* Workspace */}
             <div
               ref={scrollRef}
-              className="flex-1 overflow-auto flex justify-center p-6 bg-slate-200/60"
+              className="flex-1 overflow-auto flex justify-center p-2 sm:p-6 bg-slate-200/60"
             >
               <div
                 className="relative inline-block"
@@ -434,7 +452,7 @@ export default function App() {
                   const top = pdfToCssYTop(te.y, te.fontSize, pageInfo.height, scale);
                   const width = Math.max(te.width * scale, 8);
                   // Tight whiteout: cover glyph box only (descenders), not below.
-                  const height = te.fontSize * 0.85 * scale + scale;
+                  const height = te.fontSize * 1.15 * scale + scale;
                   const isActive = activeEditId === te.id;
                   return (
                     <div
